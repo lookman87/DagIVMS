@@ -1,0 +1,3295 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DagIVMS Media Node (node-1)",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/status": {
+      "get": {
+        "tags": [
+          "Node"
+        ],
+        "summary": "Node Status",
+        "operationId": "node_status_api_v1_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NodeStatusOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assignments": {
+      "get": {
+        "tags": [
+          "Node"
+        ],
+        "summary": "Cameras this node is currently running (cached from central)",
+        "operationId": "node_assignments_api_v1_assignments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/mediamtx/paths": {
+      "get": {
+        "tags": [
+          "Node"
+        ],
+        "summary": "Live MediaMTX path state (debug)",
+        "operationId": "mediamtx_paths_api_v1_mediamtx_paths_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logs": {
+      "get": {
+        "tags": [
+          "Node"
+        ],
+        "summary": "Recent log lines of the agent or MediaMTX",
+        "operationId": "node_logs_api_v1_logs_get",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "agent",
+                "mediamtx"
+              ],
+              "type": "string",
+              "default": "agent",
+              "title": "Source"
+            }
+          },
+          {
+            "name": "lines",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2000,
+              "minimum": 1,
+              "default": 200,
+              "title": "Lines"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/{segment_id}/init.mp4": {
+      "get": {
+        "tags": [
+          "Recorded media"
+        ],
+        "summary": "Media Init",
+        "operationId": "media_init_api_v1_media__segment_id__init_mp4_get",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Segment Id"
+            }
+          },
+          {
+            "name": "video_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Video Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/{segment_id}/part/{index}.m4s": {
+      "get": {
+        "tags": [
+          "Recorded media"
+        ],
+        "summary": "Media Part",
+        "operationId": "media_part_api_v1_media__segment_id__part__index__m4s_get",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Segment Id"
+            }
+          },
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Index"
+            }
+          },
+          {
+            "name": "video_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Video Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/{segment_id}/file.mp4": {
+      "get": {
+        "tags": [
+          "Recorded media"
+        ],
+        "summary": "Media File",
+        "operationId": "media_file_api_v1_media__segment_id__file_mp4_get",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Segment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/{segment_id}/audio.aac": {
+      "get": {
+        "tags": [
+          "Recorded media"
+        ],
+        "summary": "AAC rendition of a recording's first audio track",
+        "description": "Transcode audio only; the original recording and video track are never modified or decoded.",
+        "operationId": "media_audio_api_v1_media__segment_id__audio_aac_get",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Segment Id"
+            }
+          },
+          {
+            "name": "start_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Start Ms"
+            }
+          },
+          {
+            "name": "duration_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Duration Ms"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/media/{segment_id}/thumb.jpg": {
+      "get": {
+        "tags": [
+          "Recorded media"
+        ],
+        "summary": "Small preview frame for the playback timeline",
+        "description": "`at_ms` (offset in the chunk) snaps to THUMBNAIL_GRID_SECONDS; every time in a slot gets the same\ncached JPEG. A miss decodes one keyframe with ffmpeg; the video itself is never re-encoded.",
+        "operationId": "media_thumb_api_v1_media__segment_id__thumb_jpg_get",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Segment Id"
+            }
+          },
+          {
+            "name": "at_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "At Ms"
+            }
+          },
+          {
+            "name": "w",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "W"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/segments": {
+      "get": {
+        "tags": [
+          "Recorded media"
+        ],
+        "summary": "Chunks stored on this node, newest first (paged)",
+        "operationId": "list_local_segments_api_v1_segments_get",
+        "parameters": [
+          {
+            "name": "camera_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Camera Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalSegmentPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/discover": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "WS-Discovery on this node's LAN",
+        "operationId": "onvif_discover_api_v1_onvif_discover_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/DiscoverIn"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiscoveredDevice"
+                  },
+                  "type": "array",
+                  "title": "Response Onvif Discover Api V1 Onvif Discover Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/probe": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Identity, clock and stream profiles of one device",
+        "operationId": "onvif_probe_api_v1_onvif_probe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProbeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/profile-g/probe": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Read-only camera edge-storage capability and recording ranges",
+        "operationId": "profile_g_probe_api_v1_onvif_profile_g_probe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileGProbeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/device": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Live identity, clock and read-only settings",
+        "operationId": "onvif_device_state_api_v1_onvif_device_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceStateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/device/clock": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Camera clock offset (no login needed on most cameras)",
+        "operationId": "onvif_clock_api_v1_onvif_device_clock_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/device/time-sync": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Set the camera clock to this node's UTC time",
+        "operationId": "onvif_time_sync_api_v1_onvif_device_time_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClockOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/device/ntp": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Point the camera at NTP servers (or DHCP-provided ones)",
+        "operationId": "onvif_ntp_api_v1_onvif_device_ntp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NtpIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/device/reboot": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Reboot the camera",
+        "operationId": "onvif_reboot_api_v1_onvif_device_reboot_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RebootOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/snapshot": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "JPEG snapshot through the node (for previews while adding cameras)",
+        "operationId": "onvif_snapshot_api_v1_onvif_snapshot_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SnapshotIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/jpeg": {}
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/encoder/read": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Encoder Read",
+        "operationId": "encoder_read_api_v1_onvif_encoder_read_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EncoderReadIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EncoderState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/encoder/check": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Encoder Check",
+        "operationId": "encoder_check_api_v1_onvif_encoder_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EncoderApplyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EncoderState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/encoder/apply": {
+      "post": {
+        "tags": [
+          "ONVIF"
+        ],
+        "summary": "Encoder Apply",
+        "operationId": "encoder_apply_api_v1_onvif_encoder_apply_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EncoderApplyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EncoderResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/ptz/open": {
+      "post": {
+        "tags": [
+          "PTZ"
+        ],
+        "summary": "Open Ptz",
+        "operationId": "open_ptz_api_v1_onvif_ptz_open_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PtzOpenIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PtzState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/ptz/command": {
+      "post": {
+        "tags": [
+          "PTZ"
+        ],
+        "summary": "Ptz Command",
+        "operationId": "ptz_command_api_v1_onvif_ptz_command_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PtzCommandIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PtzResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/onvif/ptz/ws/open": {
+      "post": {
+        "tags": [
+          "PTZ"
+        ],
+        "summary": "Open Ptz Ws",
+        "operationId": "open_ptz_ws_api_v1_onvif_ptz_ws_open_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PtzOpenIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PtzState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/capabilities": {
+      "get": {
+        "tags": [
+          "Exports"
+        ],
+        "summary": "Export Capabilities",
+        "operationId": "export_capabilities_api_v1_exports_capabilities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{job_id}/file": {
+      "get": {
+        "tags": [
+          "Exports"
+        ],
+        "summary": "Export File",
+        "operationId": "export_file_api_v1_exports__job_id__file_get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ClockOut": {
+        "properties": {
+          "offset_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offset Seconds"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          },
+          "camera_utc": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Utc"
+          }
+        },
+        "type": "object",
+        "required": [
+          "offset_seconds",
+          "source",
+          "timezone",
+          "camera_utc"
+        ],
+        "title": "ClockOut"
+      },
+      "DeviceIn": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Port",
+            "default": 80
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": ""
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": ""
+          },
+          "xaddr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xaddr"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host"
+        ],
+        "title": "DeviceIn",
+        "description": "How to reach one device. Credentials are used for this request only, never stored on the node."
+      },
+      "DeviceStateOut": {
+        "properties": {
+          "clock": {
+            "$ref": "#/components/schemas/ClockOut"
+          },
+          "info": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Info"
+          },
+          "services": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Services"
+          },
+          "has_ptz": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has Ptz"
+          },
+          "ntp": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NtpOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hostname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hostname"
+          },
+          "network": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NetworkOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "clock",
+          "info",
+          "services",
+          "ntp",
+          "hostname",
+          "network"
+        ],
+        "title": "DeviceStateOut",
+        "description": "Live device page: identity, clock and read-only settings."
+      },
+      "DiscoverIn": {
+        "properties": {
+          "seconds": {
+            "type": "number",
+            "maximum": 15.0,
+            "minimum": 1.0,
+            "title": "Seconds",
+            "default": 3.0
+          }
+        },
+        "type": "object",
+        "title": "DiscoverIn"
+      },
+      "DiscoveredDevice": {
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "title": "Endpoint"
+          },
+          "host": {
+            "type": "string",
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "title": "Port"
+          },
+          "xaddr": {
+            "type": "string",
+            "title": "Xaddr"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "hardware": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hardware"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "mac": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mac"
+          },
+          "profiles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Profiles",
+            "default": []
+          },
+          "interface_ip": {
+            "type": "string",
+            "title": "Interface Ip"
+          }
+        },
+        "type": "object",
+        "required": [
+          "endpoint",
+          "host",
+          "port",
+          "xaddr",
+          "interface_ip"
+        ],
+        "title": "DiscoveredDevice"
+      },
+      "EncoderApplyIn": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Port",
+            "default": 80
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": ""
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": ""
+          },
+          "xaddr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xaddr"
+          },
+          "profile_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Token"
+          },
+          "revision": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Revision"
+          },
+          "values": {
+            "$ref": "#/components/schemas/EncoderValues"
+          },
+          "acknowledge_shared": {
+            "type": "boolean",
+            "title": "Acknowledge Shared",
+            "default": false
+          },
+          "camera_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Camera Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host",
+          "revision",
+          "values"
+        ],
+        "title": "EncoderApplyIn"
+      },
+      "EncoderOption": {
+        "properties": {
+          "encoding": {
+            "type": "string",
+            "title": "Encoding"
+          },
+          "resolutions": {
+            "items": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Resolutions",
+            "default": []
+          },
+          "fps_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fps Range"
+          },
+          "frame_rates": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Frame Rates",
+            "default": []
+          },
+          "bitrate_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bitrate Range"
+          },
+          "gop_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gop Range"
+          },
+          "quality_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality Range"
+          },
+          "codec_profiles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Codec Profiles",
+            "default": []
+          },
+          "rate_controls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Rate Controls",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "encoding"
+        ],
+        "title": "EncoderOption"
+      },
+      "EncoderProfile": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "encoder_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Encoder Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "EncoderProfile"
+      },
+      "EncoderReadIn": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Port",
+            "default": 80
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": ""
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": ""
+          },
+          "xaddr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xaddr"
+          },
+          "profile_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host"
+        ],
+        "title": "EncoderReadIn"
+      },
+      "EncoderResult": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "mismatch",
+              "unknown"
+            ],
+            "title": "Outcome"
+          },
+          "before": {
+            "$ref": "#/components/schemas/EncoderState"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EncoderState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "recovery": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Recovery",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "before",
+          "message"
+        ],
+        "title": "EncoderResult"
+      },
+      "EncoderState": {
+        "properties": {
+          "api": {
+            "type": "string",
+            "title": "Api"
+          },
+          "profile_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Token"
+          },
+          "encoder_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Encoder Token"
+          },
+          "revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision"
+          },
+          "current": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EncoderValues"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/EncoderOption"
+            },
+            "type": "array",
+            "title": "Options",
+            "default": []
+          },
+          "profiles": {
+            "items": {
+              "$ref": "#/components/schemas/EncoderProfile"
+            },
+            "type": "array",
+            "title": "Profiles",
+            "default": []
+          },
+          "shared_profiles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Shared Profiles",
+            "default": []
+          },
+          "use_count": {
+            "type": "integer",
+            "title": "Use Count",
+            "default": 0
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "api",
+          "profile_token"
+        ],
+        "title": "EncoderState"
+      },
+      "EncoderValues": {
+        "properties": {
+          "encoding": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "H264",
+                  "H265"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Encoding"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          },
+          "fps": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fps"
+          },
+          "bitrate_kbps": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bitrate Kbps"
+          },
+          "gop": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gop"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "rate_control": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "CBR",
+                  "VBR"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Control"
+          },
+          "codec_profile": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codec Profile"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EncoderValues"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LocalSegmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "camera_id": {
+            "type": "integer",
+            "title": "Camera Id"
+          },
+          "profile": {
+            "type": "string",
+            "title": "Profile"
+          },
+          "generation": {
+            "type": "integer",
+            "title": "Generation"
+          },
+          "rel_path": {
+            "type": "string",
+            "title": "Rel Path"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Time"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "title": "Duration Ms"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "codec": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codec"
+          },
+          "audio_codec": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Codec"
+          },
+          "audio_sample_rate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Sample Rate"
+          },
+          "audio_channels": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Channels"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/SegmentOrigin",
+            "default": "NVR"
+          },
+          "backfill_job_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backfill Job Id"
+          },
+          "part_count": {
+            "type": "integer",
+            "title": "Part Count"
+          },
+          "uploaded": {
+            "type": "boolean",
+            "title": "Uploaded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "camera_id",
+          "profile",
+          "generation",
+          "rel_path",
+          "start_time",
+          "end_time",
+          "duration_ms",
+          "size_bytes",
+          "codec",
+          "part_count",
+          "uploaded"
+        ],
+        "title": "LocalSegmentOut"
+      },
+      "LocalSegmentPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LocalSegmentOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "LocalSegmentPage",
+        "description": "One page of GET /api/v1/segments (same shape as central's paged lists)."
+      },
+      "NetworkOut": {
+        "properties": {
+          "mac": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mac"
+          },
+          "dhcp": {
+            "type": "boolean",
+            "title": "Dhcp"
+          },
+          "ip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip"
+          },
+          "prefix_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefix Length"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mac",
+          "dhcp",
+          "ip",
+          "prefix_length"
+        ],
+        "title": "NetworkOut"
+      },
+      "NodeStatusOut": {
+        "properties": {
+          "node_name": {
+            "type": "string",
+            "title": "Node Name"
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id"
+          },
+          "api_url": {
+            "type": "string",
+            "title": "Api Url"
+          },
+          "central_url": {
+            "type": "string",
+            "title": "Central Url"
+          },
+          "central_online": {
+            "type": "boolean",
+            "title": "Central Online"
+          },
+          "last_central_contact": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Central Contact"
+          },
+          "mediamtx_running": {
+            "type": "boolean",
+            "title": "Mediamtx Running"
+          },
+          "mediamtx_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mediamtx Version"
+          },
+          "recordings_dir": {
+            "type": "string",
+            "title": "Recordings Dir"
+          },
+          "disk": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Disk"
+          },
+          "volumes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Volumes",
+            "default": []
+          },
+          "assigned_cameras": {
+            "type": "integer",
+            "title": "Assigned Cameras"
+          },
+          "ready_paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ready Paths"
+          },
+          "pending_uploads": {
+            "type": "integer",
+            "title": "Pending Uploads"
+          },
+          "local_segments": {
+            "type": "integer",
+            "title": "Local Segments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node_name",
+          "node_id",
+          "api_url",
+          "central_url",
+          "central_online",
+          "last_central_contact",
+          "mediamtx_running",
+          "mediamtx_version",
+          "recordings_dir",
+          "disk",
+          "assigned_cameras",
+          "ready_paths",
+          "pending_uploads",
+          "local_segments"
+        ],
+        "title": "NodeStatusOut"
+      },
+      "NtpIn": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Port",
+            "default": 80
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": ""
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": ""
+          },
+          "xaddr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xaddr"
+          },
+          "from_dhcp": {
+            "type": "boolean",
+            "title": "From Dhcp",
+            "default": false
+          },
+          "servers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Servers",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "host"
+        ],
+        "title": "NtpIn"
+      },
+      "NtpOut": {
+        "properties": {
+          "from_dhcp": {
+            "type": "boolean",
+            "title": "From Dhcp"
+          },
+          "servers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Servers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "from_dhcp",
+          "servers"
+        ],
+        "title": "NtpOut"
+      },
+      "ProbeOut": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "title": "Port"
+          },
+          "device_url": {
+            "type": "string",
+            "title": "Device Url"
+          },
+          "clock": {
+            "$ref": "#/components/schemas/ClockOut"
+          },
+          "info": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Info"
+          },
+          "services": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Services"
+          },
+          "profiles": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileOut"
+            },
+            "type": "array",
+            "title": "Profiles"
+          },
+          "suggested": {
+            "$ref": "#/components/schemas/SuggestedOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host",
+          "port",
+          "device_url",
+          "clock",
+          "info",
+          "services",
+          "profiles",
+          "suggested"
+        ],
+        "title": "ProbeOut"
+      },
+      "ProfileGProbeOut": {
+        "properties": {
+          "supported": {
+            "type": "boolean",
+            "title": "Supported"
+          },
+          "recording_service": {
+            "type": "boolean",
+            "title": "Recording Service"
+          },
+          "search_service": {
+            "type": "boolean",
+            "title": "Search Service"
+          },
+          "replay_service": {
+            "type": "boolean",
+            "title": "Replay Service"
+          },
+          "earliest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Earliest"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest"
+          },
+          "recordings": {
+            "items": {
+              "$ref": "#/components/schemas/ProfileGRecordingOut"
+            },
+            "type": "array",
+            "title": "Recordings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "supported",
+          "recording_service",
+          "search_service",
+          "replay_service",
+          "recordings"
+        ],
+        "title": "ProfileGProbeOut"
+      },
+      "ProfileGRecordingOut": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "earliest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Earliest"
+          },
+          "latest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest"
+          },
+          "replay_available": {
+            "type": "boolean",
+            "title": "Replay Available",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "ProfileGRecordingOut"
+      },
+      "ProfileOut": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "api": {
+            "type": "string",
+            "title": "Api"
+          },
+          "encoding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Encoding"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          },
+          "fps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fps"
+          },
+          "bitrate_kbps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bitrate Kbps"
+          },
+          "has_audio": {
+            "type": "boolean",
+            "title": "Has Audio"
+          },
+          "audio_encoder_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Encoder Token"
+          },
+          "audio_encoding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Encoding"
+          },
+          "audio_codec": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Codec"
+          },
+          "audio_bitrate_kbps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Bitrate Kbps"
+          },
+          "audio_sample_rate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Sample Rate"
+          },
+          "audio_channels": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Channels"
+          },
+          "has_ptz": {
+            "type": "boolean",
+            "title": "Has Ptz"
+          },
+          "rtsp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rtsp"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "name",
+          "api",
+          "encoding",
+          "width",
+          "height",
+          "fps",
+          "bitrate_kbps",
+          "has_audio",
+          "has_ptz",
+          "rtsp",
+          "snapshot"
+        ],
+        "title": "ProfileOut"
+      },
+      "PtzCapabilities": {
+        "properties": {
+          "pan_tilt": {
+            "type": "boolean",
+            "title": "Pan Tilt",
+            "default": false
+          },
+          "zoom": {
+            "type": "boolean",
+            "title": "Zoom",
+            "default": false
+          },
+          "presets": {
+            "type": "boolean",
+            "title": "Presets",
+            "default": false
+          },
+          "home": {
+            "type": "boolean",
+            "title": "Home",
+            "default": false
+          },
+          "home_set": {
+            "type": "boolean",
+            "title": "Home Set",
+            "default": false
+          },
+          "camera_timeout_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Timeout Seconds"
+          }
+        },
+        "type": "object",
+        "title": "PtzCapabilities"
+      },
+      "PtzCommand": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 16,
+            "title": "Session Id"
+          },
+          "sequence": {
+            "type": "integer",
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Sequence"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "move",
+              "stop",
+              "refresh",
+              "preset_save",
+              "preset_goto",
+              "preset_remove",
+              "home_goto",
+              "home_set"
+            ],
+            "title": "Action"
+          },
+          "pan": {
+            "type": "number",
+            "maximum": 0.5,
+            "minimum": -0.5,
+            "title": "Pan",
+            "default": 0
+          },
+          "tilt": {
+            "type": "number",
+            "maximum": 0.5,
+            "minimum": -0.5,
+            "title": "Tilt",
+            "default": 0
+          },
+          "zoom": {
+            "type": "number",
+            "maximum": 0.5,
+            "minimum": -0.5,
+            "title": "Zoom",
+            "default": 0
+          },
+          "preset_token": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preset Token"
+          },
+          "preset_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preset Name"
+          },
+          "confirm": {
+            "type": "boolean",
+            "title": "Confirm",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "session_id",
+          "sequence",
+          "action"
+        ],
+        "title": "PtzCommand"
+      },
+      "PtzCommandIn": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Port",
+            "default": 80
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": ""
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": ""
+          },
+          "xaddr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xaddr"
+          },
+          "profile_token": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Profile Token"
+          },
+          "command": {
+            "$ref": "#/components/schemas/PtzCommand"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host",
+          "profile_token",
+          "command"
+        ],
+        "title": "PtzCommandIn"
+      },
+      "PtzOpenIn": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Port",
+            "default": 80
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": ""
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": ""
+          },
+          "xaddr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xaddr"
+          },
+          "profile_token": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Profile Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host",
+          "profile_token"
+        ],
+        "title": "PtzOpenIn"
+      },
+      "PtzPreset": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "name"
+        ],
+        "title": "PtzPreset"
+      },
+      "PtzResult": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PtzStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "presets": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PtzPreset"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "PtzResult"
+      },
+      "PtzState": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "expires_in_seconds": {
+            "type": "integer",
+            "title": "Expires In Seconds",
+            "default": 120
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/PtzCapabilities"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PtzStatus"
+          },
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/PtzPreset"
+            },
+            "type": "array",
+            "title": "Presets",
+            "default": []
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "capabilities",
+          "status"
+        ],
+        "title": "PtzState"
+      },
+      "PtzStatus": {
+        "properties": {
+          "pan": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pan"
+          },
+          "tilt": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tilt"
+          },
+          "zoom": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zoom"
+          },
+          "pan_tilt_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pan Tilt State"
+          },
+          "zoom_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zoom State"
+          },
+          "position_valid": {
+            "type": "boolean",
+            "title": "Position Valid",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "PtzStatus"
+      },
+      "RebootOut": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "RebootOut"
+      },
+      "SegmentOrigin": {
+        "type": "string",
+        "enum": [
+          "NVR",
+          "CAMERA_SD"
+        ],
+        "title": "SegmentOrigin"
+      },
+      "SnapshotIn": {
+        "properties": {
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Host"
+          },
+          "port": {
+            "type": "integer",
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Port",
+            "default": 80
+          },
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": ""
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": ""
+          },
+          "xaddr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xaddr"
+          },
+          "uri": {
+            "type": "string",
+            "title": "Uri"
+          }
+        },
+        "type": "object",
+        "required": [
+          "host",
+          "uri"
+        ],
+        "title": "SnapshotIn"
+      },
+      "SuggestedOut": {
+        "properties": {
+          "main": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Main"
+          },
+          "sub": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sub"
+          }
+        },
+        "type": "object",
+        "required": [
+          "main",
+          "sub"
+        ],
+        "title": "SuggestedOut"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

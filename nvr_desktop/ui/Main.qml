@@ -1,0 +1,152 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import App
+import "theme"
+import "layout"
+import "components"
+
+// App shell (port of AppLayout.tsx): sidebar + top bar + the current page, toasts on top.
+// Sign-in (docs/DESKTOP_AUTH_PLAN.md): until Auth.isReady (signed in, or auth off) only AuthGate is shown and no
+// page is loaded; a page the user's role does not allow shows NoAccessPage.
+ApplicationWindow {
+    id: window
+
+    readonly property var pages: ({
+        dashboard: "pages/dashboard/DashboardPage.qml",
+        live: "pages/live/LivePage.qml",
+        playback: "pages/playback/PlaybackPage.qml",
+        cameras: "pages/cameras/CamerasPage.qml",
+        camera: "pages/cameras/CameraDetailPage.qml",
+        groups: "pages/groups/GroupsPage.qml",
+        discover: "pages/onvif/DiscoverPage.qml",
+        nodes: "pages/nodes/NodesPage.qml",
+        node: "pages/nodes/NodeDetailPage.qml",
+        assignments: "pages/assignments/AssignmentsPage.qml",
+        access: "pages/access/AccessPage.qml",
+        audit: "pages/audit/AuditPage.qml",
+        settings: "pages/settings/SettingsPage.qml"
+    })
+    readonly property bool pageAllowed: Auth.isReady && Auth.pages[Router.page] === true
+
+    // Live View is kept loaded (hidden, its tiles paused) for LIVE_KEEP_ALIVE_MS after leaving it, so switching
+    // pages is instant both ways: destroying 16 players costs ~1.6 s on the UI thread (GL render contexts and
+    // decoders must be freed there). After the keep-alive the tiles release their players one by one
+    // (LivePage.releasePlayers), then the page is unloaded.
+    property int liveKeepAliveMs: 120000
+    property bool liveKept: false
+
+    // Live View fullscreen: hide the sidebar and top bar and fill the screen (F11 / Esc).
+    property bool immersive: false
+    property int visibilityBeforeImmersive: Window.Windowed
+    onImmersiveChanged: {
+        if (immersive) {
+            visibilityBeforeImmersive = visibility
+            showFullScreen()
+        } else {
+            visibility = visibilityBeforeImmersive === Window.FullScreen ? Window.Windowed : visibilityBeforeImmersive
+        }
+    }
+
+    width: 1480
+    height: 920
+    minimumWidth: 1100
+    minimumHeight: 700
+    visible: true
+    title: ProductName
+    color: Theme.background
+    font.family: Theme.font
+
+    RowLayout {
+        anchors.fill: parent
+        spacing: 0
+        visible: Auth.isReady
+
+        Sidebar { visible: !window.immersive; Layout.fillHeight: true }
+
+        ColumnLayout {
+            spacing: 0
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            Topbar { visible: !window.immersive; Layout.fillWidth: true }
+
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                Loader {
+                    id: page
+                    anchors.fill: parent
+                    source: !Auth.isReady || Router.page === "live" && window.pageAllowed ? ""
+                        : window.pageAllowed ? window.pages[Router.page] : "pages/auth/NoAccessPage.qml"
+                    asynchronous: false
+                }
+                Loader {
+                    id: livePage
+                    anchors.fill: parent
+                    active: Auth.isReady && Auth.pages.live === true && (Router.page === "live" || window.liveKept)
+                    visible: Router.page === "live" && window.pageAllowed
+                    source: window.pages.live
+                    asynchronous: false
+                    onLoaded: window.liveKept = true  // set before leaving, so `active` stays true then
+                }
+                Binding {
+                    target: livePage.item
+                    property: "away"
+                    value: Router.page !== "live"
+                    when: livePage.item !== null
+                }
+                Connections {
+                    target: livePage.item
+                    ignoreUnknownSignals: true
+                    function onPlayersReleased() { window.liveKept = false }
+                }
+            }
+        }
+    }
+
+    // nobody signed in: sign-in screens instead of the app
+    Loader {
+        anchors.fill: parent
+        active: !Auth.isReady
+        source: "pages/auth/AuthGate.qml"
+    }
+    Connections {
+        target: Auth
+        function onSessionEnded() {  // sign-out / session ended: no kept-alive Live page, no fullscreen
+            liveKeepAlive.stop()
+            window.liveKept = false
+            window.immersive = false
+        }
+    }
+
+    Connections {
+        target: Router
+        function onChanged() {
+            if (Router.page === "live") {
+                liveKeepAlive.stop()
+            } else if (window.liveKept && !liveKeepAlive.running) {
+                liveKeepAlive.start()
+            }
+        }
+    }
+    Timer {
+        id: liveKeepAlive
+        interval: window.liveKeepAliveMs
+        onTriggered: if (livePage.item) livePage.item.releasePlayers()
+    }
+
+    Toaster {
+        parent: Overlay.overlay
+        z: 1000
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 16
+    }
+
+    Shortcut { sequence: "Alt+Left"; onActivated: Router.back() }
+    Shortcut { sequence: "F11"; enabled: Router.page === "live"; onActivated: window.immersive = !window.immersive }
+    Shortcut { sequence: "Esc"; enabled: window.immersive; onActivated: window.immersive = false }
+    Shortcut { sequence: "F5"; onActivated: { Cluster.refresh(); Cameras.refresh(); Nodes.refresh() } }
+}

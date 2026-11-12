@@ -1,0 +1,144 @@
+from enum import Enum
+
+from tortoise import fields
+from tortoise.models import Model
+
+
+class StreamStatus(str, Enum):
+    UNKNOWN = "UNKNOWN"
+    UNASSIGNED = "UNASSIGNED"
+    ASSIGNED = "ASSIGNED"
+    CONNECTING = "CONNECTING"
+    IDLE = "IDLE"  # live-only stream, connects on demand when someone watches
+    STREAMING = "STREAMING"
+    RECORDING = "RECORDING"
+    NOT_RECORDING = "NOT_RECORDING"
+    DISABLED = "DISABLED"
+
+
+class Camera(Model):
+    id = fields.IntField(primary_key=True)
+    name = fields.CharField(max_length=128)
+    description = fields.TextField(null=True)
+    username = fields.CharField(max_length=128, null=True)
+    password = fields.CharField(max_length=256, null=True)
+    enabled = fields.BooleanField(default=True)
+    # Whether the owning media node may expose this camera through its H5 virtual ONVIF NVR.
+    expose_via_onvif = fields.BooleanField(default=True)
+    # Max days of recordings, counted back from the camera's latest recording (app/recordings/services.py).
+    # None = keep until storage is full (only space-based cleanup on the node removes recordings).
+    retention_days = fields.IntField(default=7, null=True)
+
+    # ONVIF device (H1). Filled when added through discovery or on the first Device-page refresh; all optional,
+    # so manually added cameras keep working. Credentials are the camera's username/password above.
+    onvif_host = fields.CharField(max_length=255, null=True)
+    onvif_port = fields.IntField(null=True)
+    manufacturer = fields.CharField(max_length=128, null=True)
+    model = fields.CharField(max_length=128, null=True)
+    firmware = fields.CharField(max_length=128, null=True)
+    serial = fields.CharField(max_length=128, null=True)
+    mac = fields.CharField(max_length=32, null=True)
+    onvif_services = fields.JSONField(null=True)  # ONVIF service namespaces the device offers
+    onvif_reachable = fields.BooleanField(null=True)  # last ONVIF check (no login) answered
+    clock_offset_seconds = fields.FloatField(null=True)  # camera clock minus node clock
+    onvif_checked_at = fields.DatetimeField(null=True)
+    # PTZ-capable. Auto-set from ONVIF detection (a media profile carrying a PTZConfiguration) on add and on each
+    # Device-page re-probe; editable by hand for non-ONVIF cameras. Clients show PTZ controls only when this is true.
+    has_ptz = fields.BooleanField(default=False)
+    # L3 edge-storage recovery. Automatic mode is intentionally opt-in.
+    backfill_mode = fields.CharField(max_length=16, default="off")  # off | manual | automatic
+    backfill_profile = fields.CharField(max_length=32, default="main")
+    backfill_recording_token = fields.CharField(max_length=256, null=True)
+    backfill_capability = fields.CharField(max_length=16, default="unknown")
+    backfill_earliest = fields.DatetimeField(null=True)
+    backfill_latest = fields.DatetimeField(null=True)
+    backfill_checked_at = fields.DatetimeField(null=True)
+    backfill_error = fields.CharField(max_length=512, null=True)
+    # Camera tree (docs/GROUPING_PLAN.md): one group or none. Deleting a group never deletes cameras.
+    group = fields.ForeignKeyField("models.CameraGroup", related_name="cameras", null=True,
+                                   on_delete=fields.SET_NULL)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+
+    streams: fields.ReverseRelation["CameraStream"]
+
+    class Meta:
+        table = "cameras"
+        # paged camera list is ordered by name, id; a group's cameras likewise
+        indexes = (("name", "id"), ("group_id", "name", "id"))
+        ordering = ["id"]
+
+
+class CameraStream(Model):
+    """One video profile of a camera (main / sub / ...), pulled by MediaMTX as one path."""
+
+    id = fields.IntField(primary_key=True)
+    camera: fields.ForeignKeyRelation[Camera] = fields.ForeignKeyField(
+        "models.Camera", related_name="streams", on_delete=fields.CASCADE
+    )
+    profile = fields.CharField(max_length=32)
+    source_url = fields.CharField(max_length=1024)
+    record = fields.BooleanField(default=True)
+    rtsp_transport = fields.CharField(max_length=16, default="tcp")
+    onvif_profile_token = fields.CharField(max_length=128, null=True)  # ONVIF media profile behind source_url
+
+    # H6 audio metadata. ONVIF values are provisional; the owning node replaces codec/properties with the
+    # actual MediaMTX track whenever the RTSP path is online. None means that the stream has not been checked.
+    audio_advertised = fields.BooleanField(null=True)
+    audio_observed = fields.BooleanField(null=True)
+    audio_codec = fields.CharField(max_length=32, null=True)
+    audio_codec_raw = fields.CharField(max_length=64, null=True)
+    audio_sample_rate = fields.IntField(null=True)
+    audio_channels = fields.IntField(null=True)
+    audio_bitrate_kbps = fields.IntField(null=True)
+    audio_last_observed_at = fields.DatetimeField(null=True)
+
+    # Runtime state reported by the owning media node.
+    status = fields.CharEnumField(StreamStatus, max_length=32, default=StreamStatus.UNASSIGNED)
+    status_detail = fields.CharField(max_length=512, null=True)
+    bytes_received = fields.BigIntField(default=0)
+    last_status_at = fields.DatetimeField(null=True)
+    last_segment_at = fields.DatetimeField(null=True)
+
+    class Meta:
+        table = "camera_streams"
+        unique_together = (("camera", "profile"),)
+        indexes = (("status",),)  # camera list "status" filter
+        ordering = ["id"]
+
+    def path_name(self) -> str:
+        """MediaMTX path name, shared by live URLs and recording folders."""
+        return f"cam-{self.camera_id}/{self.profile}"  # type: ignore[attr-defined]
+
+    @property
+    def audio_state(self) -> str:
+        if self.audio_observed is True:
+            return "unsupported" if self.audio_codec == "unsupported" else "available"
+        if self.audio_observed is False:
+            return "advertised_not_observed" if self.audio_advertised else "none"
+        if self.audio_advertised is True:
+            return "advertised_not_observed"
+        if self.audio_advertised is False:
+            return "none"
+        return "unknown"
+
+
+class EncoderChange(Model):
+    """Durable H2 journal and cross-worker device mutex. Contains no credentials or raw XML."""
+    id = fields.CharField(max_length=64, primary_key=True)
+    camera_id = fields.IntField(db_index=True)
+    profile = fields.CharField(max_length=32)
+    profile_token = fields.CharField(max_length=128)
+    device_key = fields.CharField(max_length=300)
+    active_key = fields.CharField(max_length=300, null=True, unique=True)
+    node_id = fields.IntField()
+    request = fields.JSONField()
+    before = fields.JSONField(null=True)
+    result = fields.JSONField(null=True)
+    status = fields.CharField(max_length=32, default="pending")
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+
+    class Meta:
+        table = "encoder_changes"
+        ordering = ["-created_at"]
